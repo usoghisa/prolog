@@ -11,17 +11,26 @@
 % consult('maze.pl').
 % CALL ?- solve(From, To, Path). 
 % use semicolon ; to see the path
+u(m,1).
+mazeSize(2, 2).
+barrier(2, 2).
 
-path([0,0], [1,0],[2,0]).
-path([2,0], [2,1],[2,2]).
-path([2,2], [2,3]).
+%% We start by defining the database of facts which describe the paths between points
+path([1,1],[2,1]).
+path([2,1],[2,2]).
+route(X,X).
+route(X,Y) :- path(X,Z), route(Z,Y).
 
-solve(From, To, Path):-
-  solve(From, To, [], Path).
+%% solve(From, To, Path).
+d([2,1], [2,2]).
+d([2,2], [1,2]).
+d([2,2], [2,3]).
 
-solve(X, X, T, T).
-solve(X, Y, T, NT) :-
-    (path(X,Z) ; path(Z, X)),
-    \+ member(Z,T),
-    solve(Z, Y, [Z|T], NT).
-	
+go(From, To, Path) :-
+go(From, To, [], Path).
+
+go(P, P, T, T).
+go(P1, P2, T, NT) :-
+    (d(P1, P3) ; d(P3, P2)),
+    \+ member(P3, T),
+    go(P3, P2, [P3|T], NT).
